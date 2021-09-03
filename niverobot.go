@@ -31,14 +31,14 @@ func main() {
 
 		if strings.Contains(strings.ToLower(update.Message.Text), "werkt de bot van siwa"){
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Nee, Fix je bot homo!")
-			msg.ReplyToMessageID = update.Message.MessageID
+			//msg.ReplyToMessageID = update.Message.MessageID
 
 			bot.Send(msg)
 		}
 
 		if strings.Contains(strings.ToLower(update.Message.Text), "ping"){
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "pong")
-			msg.ReplyToMessageID = update.Message.MessageID
+			//msg.ReplyToMessageID = update.Message.MessageID
 
 			bot.Send(msg)
 		}
