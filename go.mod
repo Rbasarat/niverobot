@@ -1,4 +1,4 @@
-module golang_niverobot
+module niverobot.com
 
 go 1.17
 
