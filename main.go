@@ -82,7 +82,13 @@ func main() {
 
 		// This is the kudo feature
 		if update.Message.ReplyToMessage != nil && (strings.EqualFold(update.Message.Text, "+") || strings.EqualFold(update.Message.Text, "-")) {
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Kudo added.")
+			var kudoType string
+			if strings.EqualFold(update.Message.Text, "+") {
+				kudoType = "Plus"
+			} else {
+				kudoType = "Min"
+			}
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("%s kudo added", kudoType))
 			if err := features.AddKudo(update.Message, db); err != nil {
 				msg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
 			}

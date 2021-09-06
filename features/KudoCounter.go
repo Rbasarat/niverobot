@@ -15,7 +15,7 @@ func AddKudo(update *tgbotapi.Message, db *gorm.DB) error {
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return err
 	}
-	kudo, err := CreateKudoIfNotExist(update, receiver, db)
+	kudo, err := CreateKudoIfNotExist(update, db)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return err
 	}
@@ -23,3 +23,5 @@ func AddKudo(update *tgbotapi.Message, db *gorm.DB) error {
 
 	return err
 }
+
+

@@ -46,7 +46,7 @@ func CreateUserIfNotExist(from *tgbotapi.User, db *gorm.DB) (model.User, error) 
 	return user, result.Error
 }
 
-func CreateKudoIfNotExist(update *tgbotapi.Message, user model.User, db *gorm.DB) (model.Kudo, error) {
+func CreateKudoIfNotExist(update *tgbotapi.Message, db *gorm.DB) (model.Kudo, error) {
 	var kudo model.Kudo
 	var result *gorm.DB
 	// Check if kudo does not exist on message and create
@@ -69,23 +69,17 @@ func UpdateKudoCount(kudo model.Kudo, user model.User, db *gorm.DB) (model.KudoC
 	var kudoCount model.KudoCount
 	var result *gorm.DB
 
-	// Update kudo counter
-	if result = db.Where(&model.KudoCount{User: user}).Find(&kudoCount); result.Error == gorm.ErrRecordNotFound {
-		kudoCount = model.KudoCount{
-			User: user,
-		}
-		result = db.Create(&kudoCount)
+	kudoCount = model.KudoCount{
+		User:  user,
+		Plus:  0,
+		Minus: 0,
 	}
-	if result.Error != nil {
-		return kudoCount, result.Error
-	}
-
-	kudoCount.User = user
 	if kudo.IsPositive {
 		kudoCount.Plus++
 	} else {
 		kudoCount.Minus++
 	}
+
 	result = db.Save(&kudoCount)
 	return kudoCount, result.Error
 
