@@ -67,13 +67,17 @@ func CreateKudoIfNotExist(update *tgbotapi.Message, db *gorm.DB) (model.Kudo, er
 
 func UpdateKudoCount(kudo model.Kudo, user model.User, db *gorm.DB) (model.KudoCount, error) {
 	var kudoCount model.KudoCount
-	var result *gorm.DB
 
-	kudoCount = model.KudoCount{
-		User:  user,
-		Plus:  0,
-		Minus: 0,
+	result := db.Where(&model.KudoCount{UserID: user.ID}).Find(&kudoCount)
+
+	if result.RowsAffected < 1 {
+		kudoCount = model.KudoCount{
+			User: user,
+			Plus:  0,
+			Minus: 0,
+		}
 	}
+
 	if kudo.IsPositive {
 		kudoCount.Plus++
 	} else {
