@@ -49,14 +49,13 @@ func CreateUserIfNotExist(from *tgbotapi.User, db *gorm.DB) (model.User, error) 
 func CreateKudoIfNotExist(update *tgbotapi.Message, user model.User, db *gorm.DB) (model.Kudo, error) {
 	var kudo model.Kudo
 	var result *gorm.DB
-	kudoPositive := strings.EqualFold(update.Text, "+")
 	// Check if kudo does not exist on message and create
-	if result = db.Where(&model.Kudo{MessageID: update.ReplyToMessage.MessageID, ChatID: update.Chat.ID, User: user}).Find(&kudo); result.RowsAffected < 1 {
+	if result = db.Where(&model.Kudo{MessageID: update.ReplyToMessage.MessageID, ChatID: update.Chat.ID, UserID: update.From.ID}).Find(&kudo); result.RowsAffected < 1 {
 		kudo = model.Kudo{
-			IsPositive: kudoPositive,
+			IsPositive: strings.EqualFold(update.Text, "+"),
 			MessageID:  update.ReplyToMessage.MessageID,
 			ChatID:     update.Chat.ID,
-			User:       user,
+			UserID:     update.From.ID,
 		}
 		result = db.Create(&kudo)
 	} else {
