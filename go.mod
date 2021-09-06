@@ -1,4 +1,4 @@
-module niverobot.com
+module niverobot
 
 go 1.17
 
