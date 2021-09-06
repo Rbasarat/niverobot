@@ -6,6 +6,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
+	"niverobot/features"
 	"niverobot/model"
 	"os"
 	"strconv"
@@ -52,7 +53,7 @@ func main() {
 	}
 
 	log.Println("Applying migrations...")
-	err = db.AutoMigrate(&model.User{}, &model.Kudo{})
+	err = db.AutoMigrate(&model.User{}, &model.Kudo{}, &model.KudoCount{})
 	if err != nil {
 		log.Panicf("migration failed: %s", err)
 	}
@@ -60,7 +61,7 @@ func main() {
 	log.Println("Connecting to Telegram...")
 	bot, err := tgbotapi.NewBotAPI(botToken)
 	if err != nil {
-		log.Panicf("Failed connecting to Telegram: %s",err)
+		log.Panicf("Failed connecting to Telegram: %s", err)
 	}
 
 	// TODO: check this flag
@@ -79,25 +80,40 @@ func main() {
 			continue
 		}
 
-		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+		// This is the kudo feature
+		if update.Message.ReplyToMessage != nil && (strings.EqualFold(update.Message.Text, "+") || strings.EqualFold(update.Message.Text, "-")) {
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Kudo added.")
+			if err := features.AddKudo(update.Message, db); err != nil {
+				msg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
+			}
 
-		if update.Message.Chat.ID == 859571171 && update.Message.ReplyToMessage != nil {
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "I see your reply")
-			bot.Send(msg)
+			// TODO: error handling
+			_, err := bot.Send(msg)
+			if err != nil {
+				return
+			}
 		}
 
 		if strings.Contains(strings.ToLower(update.Message.Text), "werkt de bot van siwa") {
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Nee, Fix je bot homo!")
 			//msg.ReplyToMessageID = update.Message.MessageID
 
-			bot.Send(msg)
+			// TODO: error handling
+			_, err := bot.Send(msg)
+			if err != nil {
+				return
+			}
 		}
 
 		if strings.Contains(strings.ToLower(update.Message.Text), "ping") {
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "pong")
 			//msg.ReplyToMessageID = update.Message.MessageID
 
-			bot.Send(msg)
+			// TODO: error handling
+			_, err := bot.Send(msg)
+			if err != nil {
+				return
+			}
 		}
 
 	}
