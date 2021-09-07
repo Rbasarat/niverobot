@@ -1,6 +1,7 @@
 package features
 
 import (
+	"errors"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"gorm.io/gorm"
@@ -29,6 +30,16 @@ func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotA
 	}
 
 	_, err = k.users.CreateUserIfNotExist(update.Message.From, db)
+
+	// You may not vote on your own message.
+	if update.Message.From.ID == update.Message.ReplyToMessage.From.ID {
+		err = errors.New("voting on own message not allowed")
+		_, err = bot.Send(msg)
+		if err != nil {
+			log.Println("error sending message %s", err)
+		}
+		return
+	}
 	if err != nil && err != gorm.ErrRecordNotFound {
 		msg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
 	}
@@ -50,7 +61,7 @@ func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotA
 	}
 	_, err = bot.Send(msg)
 	if err != nil {
-		log.Panicf("error sending message %s", err)
+		log.Println("error sending message %s", err)
 	}
 }
 

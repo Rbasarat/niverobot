@@ -91,7 +91,6 @@ func main() {
 		}
 		for _, i := range actions {
 			// TODO: wrap this in a transaction
-			fmt.Println(i.Trigger(update))
 			if i.Trigger(update) {
 				i.Execute(update, db, bot)
 			}
