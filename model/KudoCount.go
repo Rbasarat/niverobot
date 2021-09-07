@@ -16,9 +16,9 @@ type KudoCount struct {
 	User      User `gorm:"not null;constraint:OnDelete:CASCADE"`
 }
 func (k KudoCounts) GetKudoCountPerChat(chatId int64, db *gorm.DB) ([]KudoCount, error) {
-	var kudoCount []KudoCount
-	result := db.Where(&KudoCount{ChatID: chatId}).Find(&kudoCount)
-	return kudoCount, result.Error
+	var kudoCounts []KudoCount
+	result := db.Where(&KudoCount{ChatID: chatId}).Preload("User").Order("plus desc").Find(&kudoCounts)
+	return kudoCounts, result.Error
 }
 
 func (k KudoCounts) GetKudoCount(userId int, chatId int64, db *gorm.DB) (KudoCount, error) {
