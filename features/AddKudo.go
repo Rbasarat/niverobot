@@ -36,7 +36,7 @@ func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotA
 		err = errors.New("voting on own message not allowed")
 		_, err = bot.Send(msg)
 		if err != nil {
-			log.Println("error sending message %s", err)
+			log.Printf("error sending message %s\n", err)
 		}
 		return
 	}
@@ -61,7 +61,7 @@ func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotA
 	}
 	_, err = bot.Send(msg)
 	if err != nil {
-		log.Println("error sending message %s", err)
+		log.Printf("error sending message %s\n", err)
 	}
 }
 
