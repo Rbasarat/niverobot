@@ -74,53 +74,36 @@ func main() {
 
 	updates, err := bot.GetUpdatesChan(u)
 
-	// TODO: move this
+	kudoService := model.Kudos{}
+	userService := model.Users{}
+	kudoCountService := model.KudoCounts{}
+
+	// Different features of the bot
+	actions := []features.Action{
+		features.NewAddKudo(kudoService, userService, kudoCountService),
+		features.NewGetKudo(kudoCountService),
+		features.NewGetKudoCountOverview(kudoCountService),
+	}
+
 	for update := range updates {
 		if update.Message == nil { // ignore any non-Message Updates
 			continue
 		}
-
-		// This is the kudo feature
-		if update.Message.ReplyToMessage != nil && (strings.EqualFold(update.Message.Text, "+") || strings.EqualFold(update.Message.Text, "-")) {
-			var kudoType string
-			if strings.EqualFold(update.Message.Text, "+") {
-				kudoType = "Plus"
-			} else {
-				kudoType = "Min"
-			}
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("%s kudo added", kudoType))
-			if err := features.AddKudo(update.Message, db); err != nil {
-				msg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
-			}
-
-			// TODO: error handling
-			_, err := bot.Send(msg)
-			if err != nil {
-				return
+		for _, i := range actions {
+			// TODO: wrap this in a transaction
+			fmt.Println(i.Trigger(update))
+			if i.Trigger(update) {
+				i.Execute(update, db, bot)
 			}
 		}
 
 		if strings.Contains(strings.ToLower(update.Message.Text), "werkt de bot van siwa") {
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Nee, Fix je bot homo!")
-			//msg.ReplyToMessageID = update.Message.MessageID
-
 			// TODO: error handling
 			_, err := bot.Send(msg)
 			if err != nil {
 				return
 			}
 		}
-
-		if strings.Contains(strings.ToLower(update.Message.Text), "ping") {
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "pong")
-			//msg.ReplyToMessageID = update.Message.MessageID
-
-			// TODO: error handling
-			_, err := bot.Send(msg)
-			if err != nil {
-				return
-			}
-		}
-
 	}
 }
