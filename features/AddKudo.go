@@ -21,8 +21,7 @@ func NewAddKudo(kudosService model.Kudos, userService model.Users, kudoCountServ
 }
 
 func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotAPI) {
-	var kudoType string
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("%s kudo added", kudoType))
+	var msg tgbotapi.MessageConfig
 
 	receiver, err := k.users.CreateUserIfNotExist(update.Message.ReplyToMessage.From, db)
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -49,12 +48,6 @@ func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotA
 		msg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
 	}
 	_, err = k.kudoCounts.UpdateKudoCount(kudo, receiver, db, update.Message.Chat.ID)
-
-	if strings.EqualFold(update.Message.Text, "+") {
-		kudoType = "Plus"
-	} else {
-		kudoType = "Min"
-	}
 
 	if err != nil {
 		msg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
