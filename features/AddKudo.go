@@ -59,8 +59,8 @@ func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotA
 	if err != nil {
 		msg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
 	}
-	_, err = bot.Send(msg)
-	if err != nil {
+
+	if _, err := bot.Send(msg); err != nil {
 		log.Printf("error sending message %s\n", err)
 	}
 }
