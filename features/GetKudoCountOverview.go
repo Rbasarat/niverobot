@@ -49,5 +49,6 @@ func renderTableAsString(kudoCount []model.KudoCount) string {
 	for _, kudo := range kudoCount {
 		table.Append([]string{kudo.User.FirstName.String, strconv.Itoa(kudo.Plus), strconv.Itoa(kudo.Minus)})
 	}
+	table.Render()
 	return tableString.String()
 }
