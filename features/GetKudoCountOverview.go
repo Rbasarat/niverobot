@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"niverobot/model"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -21,6 +22,7 @@ func NewGetKudoCountOverview(kudoCountService model.KudoCounts) GetKudoCountOver
 
 func (g GetKudoCountOverview) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotAPI) {
 	kudoCounts, err := g.kudoCounts.GetKudoCountPerChat(update.Message.Chat.ID, db)
+	kudoCounts = orderByKudoSum(kudoCounts)
 	table := fmt.Sprintf("%s", renderTableAsString(kudoCounts))
 
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("<pre>%s</pre>", table))
@@ -37,6 +39,13 @@ func (g GetKudoCountOverview) Execute(update tgbotapi.Update, db *gorm.DB, bot *
 
 func (g GetKudoCountOverview) Trigger(update tgbotapi.Update) bool {
 	return strings.EqualFold(update.Message.Text, ".kudos")
+}
+
+func orderByKudoSum(kudoCounts []model.KudoCount) []model.KudoCount {
+	sort.Slice(kudoCounts, func(i, j int) bool {
+		return (kudoCounts[i].Plus - kudoCounts[i].Minus) > (kudoCounts[j].Plus - kudoCounts[j].Minus)
+	})
+	return kudoCounts
 }
 
 func renderTableAsString(kudoCount []model.KudoCount) string {
