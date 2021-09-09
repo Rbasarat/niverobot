@@ -56,7 +56,13 @@ func renderTableAsString(kudoCount []model.KudoCount) string {
 	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	table.SetCenterSeparator("|")
 	for _, kudo := range kudoCount {
-		table.Append([]string{kudo.User.FirstName.String, strconv.Itoa(kudo.Plus), strconv.Itoa(kudo.Minus)})
+		if len(kudo.User.FirstName.String) > 5{
+			table.Append([]string{kudo.User.FirstName.String[:5], strconv.Itoa(kudo.Plus), strconv.Itoa(kudo.Minus)})
+		}else{
+			table.Append([]string{kudo.User.FirstName.String, strconv.Itoa(kudo.Plus), strconv.Itoa(kudo.Minus)})
+		}
+
+
 	}
 	table.Render()
 	return tableString.String()
