@@ -1,17 +1,31 @@
 version: '3.1'
 
 services:
-
+  niverobot:
+    image: ghcr.io/rbasarat/niverobot:1.0.1
+    restart: unless-stopped
+    networks:
+      - default
+    depends_on:
+      - database
+    environment:
+      BOT_API_TOKEN: "InsertBotFatherTokenHere"
+      DB_HOST: database
+      DB_USER: niverobot
+      DB_PASSWORD: "InsertSecureDatabasePasswordHere"
+      DB_SCHEMA: niverobot
   database:
     image: library/postgres:13.4
+    networks:
+      - default
     ports:
       - 5432:5432
-    environment:
-      POSTGRES_USER: $DB_USER
-      POSTGRES_PASSWORD: $DB_PASSWORD
     volumes:
-      - db:/var/lib/postgresql/data
+      - C:/Users/rasja/tmp:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: niverobot
+      POSTGRES_USER: niverobot
+      POSTGRES_PASSWORD: "InsertSecureDatabasePasswordHere"
 
-volumes:
-  db:
-
+networks:
+  default:
