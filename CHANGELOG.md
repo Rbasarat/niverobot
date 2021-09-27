@@ -6,14 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.2] - 27-09-2021
+## [1.0.2] -> [1.0.4]
 ### Added
 ### Changed
 - Fixed bugs in workflow
 ### Removed
 
 
-## [1.0.1] - 27-09-2021
+## [1.0.1]
 ### Added
 - Added instructions for installing the bot.
 - Added Docker-Compose file
