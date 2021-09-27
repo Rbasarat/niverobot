@@ -77,5 +77,5 @@ func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotA
 }
 
 func (k AddKudo) Trigger(update tgbotapi.Update) bool {
-	return update.Message.ReplyToMessage != nil && (strings.EqualFold(update.Message.Text, "+") || strings.EqualFold(update.Message.Text, "-"))
+	return update.Message.ReplyToMessage != nil && !update.Message.ReplyToMessage.From.IsBot && (strings.EqualFold(update.Message.Text, "+") || strings.EqualFold(update.Message.Text, "-"))
 }
