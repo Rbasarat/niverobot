@@ -21,7 +21,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - C:/Users/rasja/tmp:/var/lib/postgresql/data
+      - /your/volume/path/here:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: niverobot
       POSTGRES_USER: niverobot
