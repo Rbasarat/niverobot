@@ -24,7 +24,7 @@ func NewAddKudo(kudosService model.Kudos, userService model.Users, kudoCountServ
 }
 
 func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotAPI) {
-	if lastUpdate == nil {
+	if lastUpdate[update.Message.Chat.ID].Message == nil {
 		return
 	}
 	var msg tgbotapi.MessageConfig
