@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"gorm.io/gorm"
 	"time"
@@ -22,6 +23,9 @@ type User struct {
 
 func (u Users) CreateUserIfNotExist(update *tgbotapi.User, db *gorm.DB) (User, error) {
 	var user User
+	if update == nil{
+		return user, errors.New("+")
+	}
 	var result *gorm.DB
 	if result = db.Take(&user, update.ID); result.RowsAffected < 1 {
 		userNameNullable := sql.NullString{String: update.UserName, Valid: true}

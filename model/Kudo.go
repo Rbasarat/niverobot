@@ -38,3 +38,22 @@ func (k Kudos) CreateFromReplyKudoIfNotExist(update *tgbotapi.Message, db *gorm.
 
 	return kudo, result.Error
 }
+
+func (k Kudos) CreateKudoIfNotExist(lastUpdate *tgbotapi.Message, newMessage *tgbotapi.Message, db *gorm.DB) (Kudo, error) {
+	var kudo Kudo
+	var result *gorm.DB
+	// Check if kudo does not exist on message and create
+	if result = db.Where(&Kudo{MessageID: lastUpdate.MessageID, ChatID: newMessage.Chat.ID, UserID: newMessage.From.ID}).Find(&kudo); result.RowsAffected < 1 {
+		kudo = Kudo{
+			IsPositive: strings.EqualFold(newMessage.Text, "+"),
+			MessageID:  lastUpdate.MessageID,
+			ChatID:     lastUpdate.Chat.ID,
+			UserID:     newMessage.From.ID,
+		}
+		result = db.Create(&kudo)
+	} else {
+		return kudo, errors.New("kudo already added")
+	}
+
+	return kudo, result.Error
+}

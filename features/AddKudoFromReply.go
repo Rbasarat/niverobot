@@ -10,17 +10,17 @@ import (
 	"strings"
 )
 
-type AddKudo struct {
+type AddKudoFromReply struct {
 	kudos      model.Kudos
 	users      model.Users
 	kudoCounts model.KudoCounts
 }
 
-func NewAddKudo(kudosService model.Kudos, userService model.Users, kudoCountService model.KudoCounts) AddKudo {
-	return AddKudo{kudos: kudosService, users: userService, kudoCounts: kudoCountService}
+func NewAddKudoFromReply(kudosService model.Kudos, userService model.Users, kudoCountService model.KudoCounts) AddKudoFromReply {
+	return AddKudoFromReply{kudos: kudosService, users: userService, kudoCounts: kudoCountService}
 }
 
-func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotAPI) {
+func (k AddKudoFromReply) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotAPI) {
 	var msg tgbotapi.MessageConfig
 	receiver, err := k.users.CreateUserIfNotExist(update.Message.ReplyToMessage.From, db)
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -76,6 +76,6 @@ func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotA
 
 }
 
-func (k AddKudo) Trigger(update tgbotapi.Update) bool {
+func (k AddKudoFromReply) Trigger(update tgbotapi.Update) bool {
 	return update.Message.ReplyToMessage != nil && !update.Message.ReplyToMessage.From.IsBot && (strings.EqualFold(update.Message.Text, "+") || strings.EqualFold(update.Message.Text, "-"))
 }

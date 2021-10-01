@@ -81,6 +81,7 @@ func main() {
 	// Different features of the bot
 	actions := []features.Action{
 		features.NewAddKudo(kudoService, userService, kudoCountService),
+		features.NewAddKudoFromReply(kudoService, userService, kudoCountService),
 		features.NewGetKudo(kudoCountService),
 		features.NewGetKudoCountOverview(kudoCountService),
 	}
