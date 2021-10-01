@@ -20,7 +20,7 @@ type Kudo struct {
 	User       User  `gorm:"not null;constraint:OnDelete:CASCADE"`
 }
 
-func (k Kudos) CreateKudoIfNotExist(update *tgbotapi.Message, db *gorm.DB) (Kudo, error) {
+func (k Kudos) CreateFromReplyKudoIfNotExist(update *tgbotapi.Message, db *gorm.DB) (Kudo, error) {
 	var kudo Kudo
 	var result *gorm.DB
 	// Check if kudo does not exist on message and create
