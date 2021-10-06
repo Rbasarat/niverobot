@@ -26,10 +26,10 @@ services:
       - database
     environment:
       BOT_API_TOKEN: "InsertBotFatherTokenHere"
-      DB_HOST: database
-      DB_USER: niverobot
-      DB_PASSWORD: "InsertSecureDatabasePasswordHere"
-      DB_SCHEMA: niverobot
+      POSTGRES_DB: database
+      POSTGRES_USER: niverobot
+      POSTGRES_PASSWORD: "InsertSecureDatabasePasswordHere"
+      POSTGRES_SCHEMA: niverobot
   database:
     image: library/postgres:13.4
     networks:

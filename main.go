@@ -30,11 +30,11 @@ func getEnvInt(name string, value int) int {
 
 var botToken = getEnvString("BOT_API_TOKEN", "secret")
 
-var dbHost = getEnvString("DB_HOST", "localhost")
-var dbPort = getEnvInt("DB_PORT", 5432)
-var dbUser = getEnvString("DB_USER", "postgres")
-var dbPassword = getEnvString("DB_PASSWORD", "postgres")
-var dbSchema = getEnvString("DB_SCHEMA", "postgres")
+var dbHost = getEnvString("POSTGRES_DB", "localhost")
+var dbPort = getEnvInt("POSTGRES_PORT", 5432)
+var dbUser = getEnvString("POSTGRES_USER", "postgres")
+var dbPassword = getEnvString("POSTGRES_PASSWORD", "postgres")
+var dbSchema = getEnvString("POSTGRES_SCHEMA", "postgres")
 
 func main() {
 	// TODO: move init db / cleanup
