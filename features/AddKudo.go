@@ -53,7 +53,7 @@ func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotA
 		msg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
 	}
 
-	kudo, err := k.kudos.CreateKudoIfNotExist(update.Message, db)
+	kudo, isUpdate, err := k.kudos.UpsertKudo(update.Message, db)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		msg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
 		_, err = bot.Send(msg)
@@ -62,7 +62,8 @@ func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotA
 		}
 		return
 	}
-	_, err = k.kudoCounts.UpdateKudoCount(kudo, receiver, db, update.Message.Chat.ID)
+
+	_, err = k.kudoCounts.UpdateKudoCount(kudo, receiver, db, update.Message.Chat.ID, isUpdate)
 
 	if err != nil {
 		msg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
