@@ -17,7 +17,7 @@ func NewGetKudo(kudoCountService model.KudoCounts) GetKudoCount {
 	return GetKudoCount{kudoCounts: kudoCountService}
 }
 
-func (g GetKudoCount) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotAPI) {
+func (g GetKudoCount) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotAPI, history model.MessageHistory) {
 	kudoCount, err := g.kudoCounts.GetKudoCount(update.Message.From.ID, update.Message.Chat.ID, db)
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Plus kudos: %d\nMin kudos: %d\n", kudoCount.Plus, kudoCount.Minus))
 	msg.ReplyToMessageID = update.Message.MessageID

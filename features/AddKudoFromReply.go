@@ -20,7 +20,7 @@ func NewAddKudo(kudosService model.Kudos, userService model.Users, kudoCountServ
 	return AddKudo{kudos: kudosService, users: userService, kudoCounts: kudoCountService}
 }
 
-func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotAPI) {
+func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotAPI, history model.MessageHistory) {
 	var msg tgbotapi.MessageConfig
 	receiver, err := k.users.CreateUserIfNotExist(update.Message.ReplyToMessage.From, db)
 	if err != nil && err != gorm.ErrRecordNotFound {

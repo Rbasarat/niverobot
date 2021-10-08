@@ -20,7 +20,7 @@ func NewGetKudoCountOverview(kudoCountService model.KudoCounts) GetKudoCountOver
 	return GetKudoCountOverview{kudoCounts: kudoCountService}
 }
 
-func (g GetKudoCountOverview) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotAPI) {
+func (g GetKudoCountOverview) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotAPI, history model.MessageHistory) {
 	kudoCounts, err := g.kudoCounts.GetKudoCountPerChat(update.Message.Chat.ID, db)
 	kudoCounts = orderByKudoSum(kudoCounts)
 	table := fmt.Sprintf("%s", renderTableAsString(kudoCounts))

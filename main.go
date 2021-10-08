@@ -77,6 +77,8 @@ func main() {
 	userService := model.Users{}
 	kudoCountService := model.KudoCounts{}
 
+	var messageHistory = map[int64]model.MessageHistory{}
+
 	// Different features of the bot
 	actions := []features.Action{
 		features.NewAddKudo(kudoService, userService, kudoCountService),
@@ -88,6 +90,9 @@ func main() {
 		if update.Message == nil { // ignore any non-Message Updates
 			continue
 		}
+		// Keep a history of messages because useful.
+		messageHistory[update.Message.Chat.ID] = messageHistory[update.Message.Chat.ID].AddMessage(update)
+
 		for _, i := range actions {
 			// TODO: wrap this in a transaction
 			if i.Trigger(update) {
