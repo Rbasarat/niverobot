@@ -15,6 +15,7 @@ type KudoCount struct {
 	UpdatedAt time.Time
 	User      User `gorm:"not null;constraint:OnDelete:CASCADE"`
 }
+
 func (k KudoCounts) GetKudoCountPerChat(chatId int64, db *gorm.DB) ([]KudoCount, error) {
 	var kudoCounts []KudoCount
 	result := db.Where(&KudoCount{ChatID: chatId}).Preload("User").Order("plus desc").Find(&kudoCounts)
@@ -27,9 +28,9 @@ func (k KudoCounts) GetKudoCount(userId int, chatId int64, db *gorm.DB) (KudoCou
 	return kudoCount, result.Error
 }
 
-func (k KudoCounts) UpdateKudoCount(kudo Kudo, user User, db *gorm.DB, chatId int64) (KudoCount, error) {
+func (k KudoCounts) UpdateKudoCount(kudo Kudo, user User, db *gorm.DB, chatId int64, isUpdate bool) (KudoCount, error) {
 	var kudoCount KudoCount
-	result := db.Where(&KudoCount{UserID: user.ID}).Find(&kudoCount)
+	result := db.Where(&KudoCount{UserID: user.ID, ChatID: chatId}).Find(&kudoCount)
 
 	if result.RowsAffected < 1 {
 		kudoCount = KudoCount{
@@ -42,11 +43,16 @@ func (k KudoCounts) UpdateKudoCount(kudo Kudo, user User, db *gorm.DB, chatId in
 
 	if kudo.IsPositive {
 		kudoCount.Plus++
+		if isUpdate {
+			kudoCount.Minus--
+		}
 	} else {
 		kudoCount.Minus++
+		if isUpdate {
+			kudoCount.Plus--
+		}
 	}
 
 	result = db.Save(&kudoCount)
 	return kudoCount, result.Error
-
 }

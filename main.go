@@ -10,7 +10,6 @@ import (
 	"niverobot/model"
 	"os"
 	"strconv"
-	"strings"
 )
 
 func getEnvString(name string, value string) string {
@@ -93,15 +92,6 @@ func main() {
 			// TODO: wrap this in a transaction
 			if i.Trigger(update) {
 				i.Execute(update, db, bot)
-			}
-		}
-
-		if strings.Contains(strings.ToLower(update.Message.Text), "werkt de bot van siwa") {
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Nee, Fix je bot homo!")
-			// TODO: error handling
-			_, err := bot.Send(msg)
-			if err != nil {
-				return
 			}
 		}
 	}
