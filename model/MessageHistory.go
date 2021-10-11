@@ -3,18 +3,21 @@ package model
 import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 
 type MessageHistory struct {
-	Message []*tgbotapi.Message
+	Messages []*tgbotapi.Message
 }
 
 func (m MessageHistory) AddMessage(update tgbotapi.Update) MessageHistory {
-	if len(m.Message) == 2 {
+	// TODO: change this to config
+	if len(m.Messages) == 10 {
 		m.DeleteMessage()
 	}
-	m.Message = append(m.Message, update.Message)
+	m.Messages = append(m.Messages, update.Message)
 	return m
 }
 
 func (m *MessageHistory) DeleteMessage() *MessageHistory {
-	m.Message = m.Message[1:]
+	m.Messages = m.Messages[1:]
 	return m
 }
+
+

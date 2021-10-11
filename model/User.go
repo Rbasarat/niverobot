@@ -56,3 +56,9 @@ func (u Users) CreateUserIfNotExist(update *tgbotapi.User, db *gorm.DB) (User, e
 
 	return user, result.Error
 }
+
+func (u Users) Find(db *gorm.DB, id int) (User, error) {
+	var user User
+	result := db.Where(&User{ID: id}).Find(&user)
+	return user, result.Error
+}
