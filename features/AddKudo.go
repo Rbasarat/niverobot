@@ -29,7 +29,7 @@ func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotA
 
 	_, err = k.users.CreateUserIfNotExist(update.Message.From, db)
 
-	// You may not vote on your own message.
+
 	if strings.EqualFold(update.Message.ReplyToMessage.Text, "+") || strings.EqualFold(update.Message.ReplyToMessage.Text, "-") {
 		err = errors.New("voting on a kudo not allowed")
 		msg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
@@ -39,6 +39,8 @@ func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotA
 		}
 		return
 	}
+
+	// You may not vote on your own message.
 	if update.Message.From.ID == update.Message.ReplyToMessage.From.ID {
 		err = errors.New("voting on own message not allowed")
 		msg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
