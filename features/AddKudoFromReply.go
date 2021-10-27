@@ -61,7 +61,7 @@ func (k AddKudoFromReply) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbo
 		}
 	}
 
-	kudo, isUpdate, err := k.kudos.UpsertKudo(update.Message.Text, update.Message.ReplyToMessage.MessageID, update.Message.ReplyToMessage.From.ID, update.Message.Chat.ID, db)
+	kudo, isUpdate, err := k.kudos.UpsertKudo(update.Message.ReplyToMessage.Text, update.Message.ReplyToMessage.MessageID, update.Message.ReplyToMessage.From.ID, update.Message.Chat.ID, k.kudos.IsPositive(update.Message.Text), db)
 
 	if err != nil {
 		log.Printf("error: %s\n", err)

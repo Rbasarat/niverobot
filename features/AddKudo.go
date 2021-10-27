@@ -22,7 +22,7 @@ func NewAddKudo(kudosService model.Kudos, userService model.Users, kudoCountServ
 func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotAPI, history model.MessageHistory) {
 	var sendMsg tgbotapi.MessageConfig
 	var lastMessage *tgbotapi.Message
-	for i := len(history.Messages)-1; i >= 0; i-- {
+	for i := len(history.Messages) - 1; i >= 0; i-- {
 		if history.Messages[i].Text != "+" && history.Messages[i].Text != "-" {
 			lastMessage = history.Messages[i]
 			break
@@ -49,7 +49,7 @@ func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotA
 	//	return
 	//}
 
-	kudo, isUpdate, err := k.kudos.UpsertKudo(lastMessage.Text, lastMessage.MessageID, receiver.ID, lastMessage.Chat.ID, db)
+	kudo, isUpdate, err := k.kudos.UpsertKudo(lastMessage.Text, lastMessage.MessageID, receiver.ID, lastMessage.Chat.ID, k.kudos.IsPositive(update.Message.Text), db)
 
 	if err != nil {
 		log.Printf("error: %s\n", err)
