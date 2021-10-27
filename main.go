@@ -77,21 +77,50 @@ func main() {
 	userService := model.Users{}
 	kudoCountService := model.KudoCounts{}
 
+	var messageHistory = map[int64]model.MessageHistory{}
+
 	// Different features of the bot
 	actions := []features.Action{
 		features.NewAddKudo(kudoService, userService, kudoCountService),
+		features.NewAddKudoFromReply(kudoService, userService, kudoCountService),
 		features.NewGetKudo(kudoCountService),
 		features.NewGetKudoCountOverview(kudoCountService),
 	}
 
 	for update := range updates {
-		if update.Message == nil { // ignore any non-Message Updates
+		if update.Message == nil { // ignore any non-Messages Updates
 			continue
 		}
+		// Stuff we wanna do on every message
+		if !update.Message.From.IsBot {
+			messageHistory[update.Message.Chat.ID] = messageHistory[update.Message.Chat.ID].AddMessage(update)
+		}
+
+		// TODO: move this? maybe middleware eventually?
+		_, err := userService.CreateUserIfNotExist(update.Message.From, db)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
+			_, err := bot.Send(msg)
+			if err != nil {
+				log.Printf("error sending message %s\n", err)
+			}
+		}
+		// TODO: Same as above
+		if update.Message.ReplyToMessage != nil {
+			_, err := userService.CreateUserIfNotExist(update.Message.From, db)
+			if err != nil && err != gorm.ErrRecordNotFound {
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
+				_, err := bot.Send(msg)
+				if err != nil {
+					log.Printf("error sending message %s\n", err)
+				}
+			}
+		}
+
 		for _, i := range actions {
 			// TODO: wrap this in a transaction
 			if i.Trigger(update) {
-				i.Execute(update, db, bot)
+				i.Execute(update, db, bot, messageHistory[update.Message.Chat.ID])
 			}
 		}
 	}
