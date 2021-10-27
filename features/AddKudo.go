@@ -1,6 +1,7 @@
 package features
 
 import (
+	"errors"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"gorm.io/gorm"
@@ -39,15 +40,15 @@ func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotA
 		return
 	}
 	//// You may not vote on your own message.
-	//if update.Message.From.ID == lastMessage.From.ID {
-	//	err = errors.New("voting on own message not allowed")
-	//	sendMsg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
-	//	_, err := bot.Send(sendMsg)
-	//	if err != nil {
-	//		log.Printf("error sending message %s\n", err)
-	//	}
-	//	return
-	//}
+	if update.Message.From.ID == lastMessage.From.ID {
+		err = errors.New("voting on own message not allowed")
+		sendMsg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
+		_, err := bot.Send(sendMsg)
+		if err != nil {
+			log.Printf("error sending message %s\n", err)
+		}
+		return
+	}
 
 	kudo, isUpdate, err := k.kudos.UpsertKudo(lastMessage.Text, lastMessage.MessageID, receiver.ID, lastMessage.Chat.ID, k.kudos.IsPositive(update.Message.Text), db)
 

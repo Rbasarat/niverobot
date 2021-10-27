@@ -43,15 +43,15 @@ func (k AddKudoFromReply) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbo
 	}
 
 	//You may not vote on your own message.
-	//if update.Message.From.ID == update.Message.ReplyToMessage.From.ID {
-	//	err = errors.New("voting on own message not allowed")
-	//	sendMsg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
-	//	_, err = bot.Send(sendMsg)
-	//	if err != nil {
-	//		log.Printf("error sending message %s\n", err)
-	//	}
-	//	return
-	//}
+	if update.Message.From.ID == update.Message.ReplyToMessage.From.ID {
+		err = errors.New("voting on own message not allowed")
+		sendMsg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
+		_, err = bot.Send(sendMsg)
+		if err != nil {
+			log.Printf("error sending message %s\n", err)
+		}
+		return
+	}
 
 	if err != nil && err != gorm.ErrRecordNotFound {
 		sendMsg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
