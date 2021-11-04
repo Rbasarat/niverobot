@@ -23,27 +23,31 @@ func NewAddKudo(kudosService model.Kudos, userService model.Users, kudoCountServ
 func (k AddKudo) Execute(update tgbotapi.Update, db *gorm.DB, bot *tgbotapi.BotAPI, history model.MessageHistory) {
 	var sendMsg tgbotapi.MessageConfig
 	var lastMessage *tgbotapi.Message
+	receiver, err := k.users.Find(db, lastMessage.From.ID)
 	for i := len(history.Messages) - 1; i >= 0; i-- {
 		if history.Messages[i].Text != "+" && history.Messages[i].Text != "-" {
+			if history.Messages[i].From.ID == update.Message.From.ID {
+				continue
+			}
 			lastMessage = history.Messages[i]
 			break
 		}
 	}
 
-	receiver, err := k.users.Find(db, lastMessage.From.ID)
-	if err != nil {
+	// You may not vote on your own message.
+	if lastMessage == nil {
+		err = errors.New("no valid message found")
 		sendMsg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
-		_, err = bot.Send(sendMsg)
+		_, err := bot.Send(sendMsg)
 		if err != nil {
 			log.Printf("error sending message %s\n", err)
 		}
 		return
 	}
-	//// You may not vote on your own message.
-	if update.Message.From.ID == lastMessage.From.ID {
-		err = errors.New("voting on own message not allowed")
+
+	if err != nil {
 		sendMsg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Kudo error: %s", err))
-		_, err := bot.Send(sendMsg)
+		_, err = bot.Send(sendMsg)
 		if err != nil {
 			log.Printf("error sending message %s\n", err)
 		}
